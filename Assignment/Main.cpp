@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <string>
 using namespace std;
-
+// testing testing testing testing 
 // It is used to store data
 struct records {
 	string acc, course, name, slots;
@@ -17,6 +17,7 @@ string temp_course, temp_name;
 bool bootup = true, looping = true;
 
 int main() {
+	cout << "Testing" << endl;
 	while (looping == true) {
 		if (bootup == true) {
 			cout << " __          __  ______   __       _____   ______   __  __   ______   " << endl
