@@ -1,7 +1,6 @@
 ﻿#include <iostream>
 #include <iomanip>
 #include <string>
-#include <fstream>
 using namespace std;
 
 // It is used to store data
