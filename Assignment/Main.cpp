@@ -1,8 +1,9 @@
 ﻿#include <iostream>
 #include <iomanip>
 #include <string>
+#include <fstream>
 using namespace std;
-// testing testing testing testing 
+
 // It is used to store data
 struct records {
 	string acc, course, name, slots;
@@ -11,13 +12,25 @@ struct records {
 
 void loading();		 // It is used for decoration.
 void error();        // It is used to revert the program from error.
+void booking();
+
+ofstream outfile;
+ifstream infile;
 
 int selection, temp_num_students, temp_slots, slots_num, total, update, cancel;
 string temp_course, temp_name;
 bool bootup = true, looping = true;
+int testTime;
 
 int main() {
-	cout << "Testing" << endl;
+
+	time_t timer;
+	timer = time(NULL);
+	struct tm* ab;
+	ab = localtime(&timer);
+	testTime = (ab->tm_mon) + 1;
+	// ab.tm_year = 200; ab.tm_mon = 11; ab.tm_mday = 10; ab.tm_hour = 10; ab.tm_min = 30; ab.tm_sec = 50;
+	cout << testTime << endl;
 	while (looping == true) {
 		if (bootup == true) {
 			cout << " __          __  ______   __       _____   ______   __  __   ______   " << endl
@@ -34,10 +47,6 @@ int main() {
 			system("cls");
 		}
 
-		r[0].acc = r[2].acc = "ZOOM A";                 // ************************************************
-		r[1].acc = r[3].acc = "ZOOM B";					//         Record the time slots and the 
-		r[0].slots = r[1].slots = "11 a.m. - 1 p.m.";	//      ZOOM account into the structure function
-		r[2].slots = r[3].slots = " 2 p.m. - 4 p.m.";	// ************************************************
 		// Main menu
 		cout << "=======================================================================================================================\n"
 			<< "                                                 * The Booking System *" << endl
@@ -119,7 +128,7 @@ int main() {
 
 				if (selection == 1) {		// ZOOM A is selected
 					if (temp_slots == 1) {
-						slots_num = 0;
+						booking();
 					}
 					else {
 						slots_num = 2;
@@ -228,6 +237,28 @@ int main() {
 		}
 	}
 	return 0;
+}
+
+void booking() {
+	cout << "\nThis time slot is empty. Do you want to book it? \n1. Yes   2. No \nSelection: ";
+	cin >> selection;
+
+	if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
+		cout << "Please type between 1 and 2" << endl;
+		error();
+	}
+
+	if (selection == 1) {				// The data is written
+		outfile.open("booking.txt", ios::app);
+		outfile << temp_course << endl << temp_name << endl << temp_num_students << endl;
+		cout << "\nThis time slot is successfully booked." << endl;
+	}
+	else {								// The booking is cancelled
+		cout << "\nThis booking is cancelled." << endl;
+	}
+system("pause");
+system("cls");
+main();
 }
 
 void error() {
