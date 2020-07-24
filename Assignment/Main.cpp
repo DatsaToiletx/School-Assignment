@@ -4,33 +4,38 @@
 #include <fstream>
 using namespace std;
 
-// It is used to store data
-struct records {
-	string acc, course, name, slots;
-	int num_students = 0, taken = 0;
-} r[4];
-
 void loading();		 // It is used for decoration.
 void error();        // It is used to revert the program from error.
 void booking();
+void calender();
 
 ofstream outfile;
 ifstream infile;
 
-int selection, temp_num_students, temp_slots, slots_num, total, update, cancel;
-string temp_course, temp_name;
+int selection, temp_num_students, temp_slots, slots_num, total, update, cancel, counting;
+string temp_acc, temp_course, temp_name, temp_timeslots, temp_time, temp_compare;
 bool bootup = true, looping = true;
-int testTime;
+int time_year, time_month, time_day, time_date;
 
 int main() {
+	calender();
+	time_t timer; timer = time(NULL);
+	struct tm* ab; ab = localtime(&timer);
+	time_year = (ab->tm_year) + 1900; time_month = (ab->tm_mon) + 1; time_day = (ab->tm_mday);
+	if (time_month < 10 && time_day < 10) {
+		temp_time = "0" + to_string(time_day) + "0" + to_string(time_month) + to_string(time_year);
+	}
+	else if (time_month < 10) {
+		temp_time = to_string(time_day) + "0" + to_string(time_month) + to_string(time_year);
+	}
+	else if (time_day < 10) {
+		temp_time = "0" + to_string(time_day) + to_string(time_month) + to_string(time_year);
+	}
+	else {
+		temp_time = to_string(time_day) + to_string(time_month) + to_string(time_year);
+	}
+	cout << temp_time << endl;
 
-	time_t timer;
-	timer = time(NULL);
-	struct tm* ab;
-	ab = localtime(&timer);
-	testTime = (ab->tm_mon) + 1;
-	// ab.tm_year = 200; ab.tm_mon = 11; ab.tm_mday = 10; ab.tm_hour = 10; ab.tm_min = 30; ab.tm_sec = 50;
-	cout << testTime << endl;
 	while (looping == true) {
 		if (bootup == true) {
 			cout << " __          __  ______   __       _____   ______   __  __   ______   " << endl
@@ -46,29 +51,44 @@ int main() {
 			system("pause");
 			system("cls");
 		}
-
 		// Main menu
 		cout << "=======================================================================================================================\n"
 			<< "                                                 * The Booking System *" << endl
 			<< "=======================================================================================================================\n"
 			<< "1. New booking.                                            | \n"
-			<< "2. Cancel booking.                                         | --> Total no. of bookings done today : " << total << endl
-			<< "3. Exit.                                                   | --> Total no. of bookings updated    : " << update << endl
-			<< "                                                           | --> Total no. of bookings cancelled  : " << cancel << endl
+			<< "2. Cancel booking.                                         | \n"
+			<< "3. Exit.                                                   | \n"
 			<< "                                                           | \n"
 			<< "                                                           | \n"
 			<< "                                                           | \n"
+			<< " Booking list for today                                    | \n"
 			<< " ---------+---------------+--------------------------------------------------+----------------------+------------------\n"
 			<< " Account  |  Course Code  |  Course Name                                     |  Number of Students  |  Time Slots" << endl
 			<< " ---------+---------------+--------------------------------------------------+----------------------+------------------\n";
-		// Display the booking record.
-		for (int i = 0; i < 4; i++) {
-			cout << " " << setw(9) << left << r[i].acc << "| " << setw(14) << left << r[i].course << "| "
-				<< setw(49) << left << r[i].name << "| " << setw(21) << left << r[i].num_students << "| " << r[i].slots << endl
-				<< " ---------+---------------+--------------------------------------------------+----------------------+------------------\n";
+		infile.open("booking.txt");
+		while (getline(infile, temp_acc)) {
+			getline(infile,temp_timeslots);
+			infile >> temp_course;
+			infile.ignore(1);
+			getline(infile, temp_name);
+			infile >> temp_num_students;
+			infile >> temp_compare;
+			infile.ignore(100, '\n');
+			if (temp_compare == temp_time) {
+				cout << " " << setw(9) << left << temp_acc << "| " << setw(14) << left << temp_course << "| "
+					<< setw(49) << left << temp_name << "| " << setw(21) << left << temp_num_students << "| " << temp_timeslots << endl
+					<< " ---------+---------------+--------------------------------------------------+----------------------+------------------\n";
+			}
+			counting++;
 		}
-		cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A" // \x1b[A is used to move cursor up the lines.
-			<< "\rSelection: ";
+		infile.close();
+		
+		cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A";
+		for (int j = 0; j < counting; j++) {
+			cout << "\x1b[A\x1b[A";
+		}
+		counting = 0;
+		cout << "\rSelection: ";
 		cin >> selection;
 		// Used to handle error.
 		if (cin.fail() or (selection != 1 && selection != 2 && selection != 3) or (!isspace(cin.peek()))) {
@@ -81,11 +101,14 @@ int main() {
 			cout << "=======================================================================================================================\n"
 				<< "                                                 * The Booking System *" << endl
 				<< "=======================================================================================================================\n"
+				<< "The booking is only available for June semester ( 15 June 2020 --> 20 September 2020)"
+				<< "Choose which day to book for the time slots."
+
 				<< "Please fill in the following details " << endl
 				<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl
 				<< "Course code                    : ";
 			cin >> temp_course;
-			cin.ignore(99 , '\n');
+			cin.ignore(99, '\n');
 			cout << "Couse name                     : ";
 			getline(cin, temp_name);
 			cout << "Number of students             : ";
@@ -108,10 +131,14 @@ int main() {
 				cout << "ZOOM A account is selected as the number of students exceed 250" << endl;
 				loading();
 				if (temp_slots == 1) {      // Time slot 11 a.m. - 1 p.m.
-					slots_num = 0;
+					temp_acc = "Zoom A";
+					temp_timeslots = "Slot 11am-1pm";
+					booking();
 				}
 				else {                      // Time slot 2 p.m. - 4 p.m.
-					slots_num = 2;
+					temp_acc = "Zoom A";
+					temp_timeslots = "Slot 2pm-4pm";
+					booking();
 				}
 			}
 			else {							// Number of students do not exceed 250
@@ -128,70 +155,30 @@ int main() {
 
 				if (selection == 1) {		// ZOOM A is selected
 					if (temp_slots == 1) {
+						temp_acc = "Zoom A";
+						temp_timeslots = "Slot 11am-1pm";
 						booking();
 					}
 					else {
-						slots_num = 2;
+						temp_acc = "Zoom A";
+						temp_timeslots = "Slot 2pm-4pm";
+						booking();
 					}
 				}
 				else {						// ZOOM B is selected
 					if (temp_slots == 1) {
-						slots_num = 1;
+						temp_acc = "Zoom B";
+						temp_timeslots = "Slot 11am-1pm";
+						booking();
 					}
 					else {
-						slots_num = 3;
+						temp_acc = "Zoom B";
+						temp_timeslots = "Slot 2pm-4pm";
+						booking();
 					}
 				}
 			}
-
-			if (r[slots_num].taken == 1) {  // The time slot is occupied.
-				cout << "\nThis time slot has been taken. " << endl
-					<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-					<< "\nDo you want to update it or cancel the booking? \n1. Update   2. Leave the old booking \nSelection: ";
-				cin >> selection;
-
-				if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
-					cout << "Please type between 1 and 2" << endl;
-					error();
-				}
-
-				if (selection == 1) {				// The data is overwrited
-					r[slots_num].course = temp_course;
-					r[slots_num].name = temp_name;
-					r[slots_num].num_students = temp_num_students;
-					total += 1;
-					update += 1;
-					cout << "\nThis time slot is successfully updated." << endl;
-				}
-				else {								// The booking is cancelled
-					cout << "\nThis booking is cancelled." << endl;
-				}
-			}
-			else {                  // The time slot is empty.
-				cout << "\nThis time slot is empty. Do you want to book it? \n1. Yes   2. No \nSelection: ";
-				cin >> selection;
-
-				if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
-					cout << "Please type between 1 and 2" << endl;
-					error();
-				}
-
-				if (selection == 1) {				// The data is written
-					r[slots_num].course = temp_course;
-					r[slots_num].name = temp_name;
-					r[slots_num].num_students = temp_num_students;
-					r[slots_num].taken = 1;
-					total += 1;
-					cout << "\nThis time slot is successfully booked." << endl;
-				}
-				else {								// The booking is cancelled
-					cout << "\nThis booking is cancelled." << endl;
-				}
-			}
-			system("pause");
-			system("cls");
 		}
-
 		else if (selection == 2) { // Cancel booking
 			system("cls");
 			cout << "=======================================================================================================================\n"
@@ -203,11 +190,23 @@ int main() {
 				<< " Account  |  Course Code  |  Course Name                                     |  Number of Students  |  Time Slots" << endl
 				<< "----------+---------------+--------------------------------------------------+----------------------+------------------\n";
 
-			for (int i = 0; i < 4; i++) {
-				cout << i + 1 << ". " << setw(7) << left << r[i].acc << "| " << setw(14) << left << r[i].course << "| "
-					<< setw(49) << left << r[i].name << "| " << setw(21) << left << r[i].num_students << "| " << r[i].slots << endl
-					<< "----------+---------------+--------------------------------------------------+----------------------+------------------\n";
+			infile.open("booking.txt");
+			while (getline(infile, temp_acc)) {
+				getline(infile, temp_timeslots);
+				infile >> temp_course;
+				infile.ignore(1);
+				getline(infile, temp_name);
+				infile >> temp_num_students;
+				infile >> temp_compare;
+				infile.ignore(100, '\n');
+				if (temp_compare == temp_time) {
+					cout << " " << setw(9) << left << temp_acc << "| " << setw(14) << left << temp_course << "| "
+						<< setw(49) << left << temp_name << "| " << setw(21) << left << temp_num_students << "| " << temp_timeslots << endl
+						<< "----------+---------------+--------------------------------------------------+----------------------+------------------\n";
+				}
+				counting++;
 			}
+			infile.close();
 			cout << "Selection: ";
 			cin >> selection;
 
@@ -223,10 +222,7 @@ int main() {
 				cout << "Please type between 1 and 2" << endl;
 				error();
 			}
-			r[slots_num].course.clear();
-			r[slots_num].name.clear();
-			r[slots_num].num_students = 0;
-			r[slots_num].taken = 0;
+			
 			cancel += 1;
 			cout << "\nThe booking is cancelled" << endl;
 			system("pause");
@@ -240,25 +236,48 @@ int main() {
 }
 
 void booking() {
-	cout << "\nThis time slot is empty. Do you want to book it? \n1. Yes   2. No \nSelection: ";
-	cin >> selection;
+	if (temp_slots == 7) {  // The time slot is occupied.
+		cout << "\nThis time slot has been taken. " << endl
+			<< "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+			<< "\nDo you want to update it or cancel the booking? \n1. Update   2. Leave the old booking \nSelection: ";
+		cin >> selection;
 
-	if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
-		cout << "Please type between 1 and 2" << endl;
-		error();
-	}
+		if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
+			cout << "Please type between 1 and 2" << endl;
+			error();
+		}
 
-	if (selection == 1) {				// The data is written
-		outfile.open("booking.txt", ios::app);
-		outfile << temp_course << endl << temp_name << endl << temp_num_students << endl;
-		cout << "\nThis time slot is successfully booked." << endl;
+		if (selection == 1) {				// The data is overwrited
+			
+			update += 1;
+			cout << "\nThis time slot is successfully updated." << endl;
+		}
+		else {								// The booking is cancelled
+			cout << "\nThis booking is cancelled." << endl;
+		}
 	}
-	else {								// The booking is cancelled
-		cout << "\nThis booking is cancelled." << endl;
+	else {
+		cout << "\nThis time slot is empty. Do you want to book it? \n1. Yes   2. No \nSelection: ";
+		cin >> selection;
+
+		if (cin.fail() or (selection != 1 && selection != 2) or (!isspace(cin.peek()))) {
+			cout << "Please type between 1 and 2" << endl;
+			error();
+		}
+
+		if (selection == 1) {				// The data is written
+			outfile.open("booking.txt", ios::app);
+			outfile << temp_acc << endl << temp_timeslots << endl << temp_course << " " << temp_name << endl << temp_num_students << endl << temp_time << endl;
+			cout << "\nThis time slot is successfully booked." << endl;
+			outfile.close();
+		}
+		else {								// The booking is cancelled
+			cout << "\nThis booking is cancelled." << endl;
+		}
 	}
-system("pause");
-system("cls");
-main();
+	system("pause");
+	system("cls");
+	main();
 }
 
 void error() {
@@ -267,7 +286,6 @@ void error() {
 	system("pause");
 	system("cls");
 	main();
-	return;
 }
 
 void loading() {
@@ -275,5 +293,91 @@ void loading() {
 		cout << "Loading . . . " << i / 40 << "%" << '\r';
 	}
 	cout << endl;
+}
+
+void calender() {
+	struct tm start = { 0 };
+	struct date {
+		int june, july, august, september;
+	}r[25];
+	start.tm_year = 120; start.tm_mon = 5; start.tm_mday = 15; start.tm_wday = 1;
+	int i = 0, display;
+	bool loop = true;
+	while (loop == true) {
+		if (start.tm_wday == 7) {
+			start.tm_wday = 0;
+		}
+
+		if (start.tm_mon == 5 && start.tm_mday == 31) {
+			start.tm_mon++; start.tm_mday = 1; i = 0;
+		}
+		if (start.tm_mon == 6 && start.tm_mday == 32) {
+			start.tm_mon++; start.tm_mday = 1; i = 0;
+		}
+		if (start.tm_mon == 7 && start.tm_mday == 32) {
+			start.tm_mon++; start.tm_mday = 1; i = 0;
+		}
+
+		if (start.tm_mon == 8 && start.tm_mday == 21) {
+			loop = false;
+		}
+
+		if (start.tm_mon == 5 && (start.tm_wday == 1 || start.tm_wday == 2 || start.tm_wday == 3 || start.tm_wday == 4 || start.tm_wday == 5)) {
+			r[i].june = start.tm_mday;
+			i++;
+		}
+		else if (start.tm_mon == 6 && (start.tm_wday == 1 || start.tm_wday == 2 || start.tm_wday == 3 || start.tm_wday == 4 || start.tm_wday == 5)) {
+			r[i].july = start.tm_mday;
+			i++;
+		}
+		else if (start.tm_mon == 7 && (start.tm_wday == 1 || start.tm_wday == 2 || start.tm_wday == 3 || start.tm_wday == 4 || start.tm_wday == 5)) {
+			r[i].august = start.tm_mday;
+			i++;
+		}
+		else {
+			r[i].september = start.tm_mday;
+		}
+		start.tm_mday++; start.tm_wday++;
+	}
+	cout << "Choose what month you want to display." << endl;
+	cin >> display;
+	switch (display) {
+	case 6:
+		cout << "These are the days available for booking in June" << endl;
+		for (i = 0; i < 12; i++) {
+			cout << " | " << r[i].june;
+			if ((i + 1) % 5 == 0) {
+				cout << " | " << endl;
+			}
+		}
+		break;
+	case 7:
+		cout << "these are the days available for booking in July" << endl;
+		for (i = 0; i < 23; i++) {
+			cout << " | " << r[i].july;
+			if ((i + 1) % 5 == 0) {
+				cout << " | " << endl;
+			}
+		}
+		break;
+	case 8:
+		cout << "these are the days available for booking in August" << endl;
+		for (i = 0; i < 21; i++) {
+			cout << " | " << r[i].august;
+			if ((i + 1) % 5 == 0) {
+				cout << " | " << endl;
+			}
+		}
+		break;
+	case 9:
+		cout << "these are the days available for booking in September" << endl;
+		for (i = 0; i < 14; i++) {
+			cout << " | " << r[i].september;
+			if ((i + 1) % 5 == 0) {
+				cout << " | " << endl;
+			}
+		}
+		break;
+	}
 	return;
 }
