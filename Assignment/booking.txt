@@ -5,26 +5,26 @@ UCCD1004 Programming Concepts and Practices
 24072020
 Zoom A
 Slot 11am-1pm
-asdfawf awfawfag
+UBMM1011 Sun Zi's Art of War and Business Strategies
 123
 24072020
 Zoom A
 Slot 11am-1pm
-UCCD1004 Programming Concepts and Practices
+UCCD1133 Introduction to Computer Organisation and Architecture
 345
 24072020
 Zoom A
 Slot 11am-1pm
-UCCD1004 Programming Concepts and Practices
-345
-25072020
+UCCD1143 Probability and Statistics for Computing
+300
+02082020
 Zoom A
-Slot 11am-1pm
-UCCD1004 Programming
-500
-11092020
-Zoom A
-Slot 11am-1pm
-UCCD1023 asdafaf
-123
-26062020
+Slot 2pm-4pm
+UCCM1153 Introduction to Calculus and Applications
+200
+04082020
+Zoom B
+Slot 2pm-4pm
+UCCN1004 Data Communications and Networking
+200
+04082020
