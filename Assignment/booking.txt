@@ -3,21 +3,11 @@ Slot 11am-1pm
 UCCD1004 Programming Concepts and Practices
 300
 24072020
-Zoom A
+Zoom B
 Slot 11am-1pm
 UBMM1011 Sun Zi's Art of War and Business Strategies
 123
 24072020
-Zoom A
-Slot 11am-1pm
-UCCD1133 Introduction to Computer Organisation and Architecture
-345
-24072020
-Zoom A
-Slot 11am-1pm
-UCCD1143 Probability and Statistics for Computing
-300
-02082020
 Zoom A
 Slot 2pm-4pm
 UCCM1153 Introduction to Calculus and Applications
